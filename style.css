@@ -1,0 +1,325 @@
+ <style>
+        /* --- 1. GLOBAL VARIABLES & RESET --- */
+        :root {
+            --bg-color: #050a14; /* Dark Background */
+            --text-color: #ffffff;
+            --highlight: #38bdf8; /* Cyan/Blue highlight */
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-bg: rgba(255, 255, 255, 0.03); /* Very transparent */
+            --backdrop-blur: blur(10px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--highlight) transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden; /* Prevent body scroll, handle inside containers */
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--highlight); border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        /* --- 2. HEADER & LOGO --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            /* Transparent Header */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); 
+            pointer-events: none; /* Let clicks pass through to map where empty */
+        }
+
+        .header-content {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.5);
+            background: transparent;
+            padding: 2px;
+            object-fit: cover;
+        }
+
+        .site-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+        }
+
+        /* --- 3. TRANSPARENT MENU BUTTON --- */
+        .menu-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: var(--backdrop-blur);
+        }
+
+        .menu-btn:hover {
+            border-color: var(--highlight);
+            color: var(--highlight);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- 4. FULL SCREEN TRANSPARENT MENU --- */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85); /* Slightly dark to make text readable over map */
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            transform: rotate(90deg);
+        }
+
+        .nav-links {
+            list-style: none;
+            text-align: center;
+            width: 100%;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin: 15px 0;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: 0.4s ease;
+        }
+
+        .nav-overlay.active .nav-links li {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 300;
+            padding: 10px 20px;
+            display: inline-block;
+            transition: 0.3s;
+            border: 1px solid transparent;
+            border-radius: 30px;
+        }
+
+        .nav-links a:hover {
+            color: var(--highlight);
+            border-color: var(--glass-border);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- 5. TRANSPARENT PAGE CONTAINERS --- */
+        .page-container {
+            display: none;
+            position: fixed;
+            top: 70px; /* Below Header */
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            z-index: 500;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* The Glass Card */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px); /* Strong blur for readability */
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 900px;
+            margin: 0 auto 50px auto;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+         
+        .glass-card a{
+            display: block;
+        }
+
+        .glass-card h1 {
+            color: var(--highlight);
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .glass-card img{
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .glass-card p, .glass-card li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            text-align: justify;
+            text-align-last: center; /* Center align last line for aesthetics */
+        }
+
+        .glass-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Transparent Buttons */
+        .btn-transparent {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 12px 30px;
+            margin-top: 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-transparent:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--highlight);
+            color: var(--highlight);
+            transform: scale(1.05);
+        }
+
+        /* --- 6. D3 VISUALIZATION STYLES --- */
+        #chart-container {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0; /* Background */
+        }
+
+        .node circle {
+            fill: #000;
+            stroke: var(--highlight);
+            stroke-width: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .node text {
+            font: 14px 'Poppins', sans-serif;
+            fill: #f1f5f9;
+            text-shadow: 0 2px 4px #000, 0 0 10px #000; /* High contrast text shadow */
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .link {
+            fill: none;
+            stroke: #64748b;
+            stroke-width: 1px;
+            opacity: 0.5;
+        }
+
+        .node:hover circle {
+            fill: #fff;
+            stroke-width: 3px;
+            r: 8px;
+        }
+
+        /* --- RESPONSIVE TWEAKS --- */
+        @media (max-width: 768px) {
+            .site-title { font-size: 1rem; }
+            .glass-card { padding: 25px 15px; }
+            .nav-links a { font-size: 1.2rem; }
+        }
+    </style>
