@@ -1,5 +1,4 @@
  <style>
-        /* --- 1. GLOBAL VARIABLES & RESET --- */
         :root {
             --bg-color: #050a14; /* Dark Background */
             --text-color: #ffffff;
@@ -21,7 +20,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            overflow: hidden; /* Prevent body scroll, handle inside containers */
+            overflow: hidden;
             width: 100vw;
             height: 100vh;
         }
@@ -31,7 +30,6 @@
         ::-webkit-scrollbar-thumb { background: var(--highlight); border-radius: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
 
-        /* --- 2. HEADER & LOGO --- */
         header {
             position: fixed;
             top: 0;
@@ -82,7 +80,6 @@
             letter-spacing: 1px;
         }
 
-        /* --- 3. TRANSPARENT MENU BUTTON --- */
         .menu-btn {
             background: transparent;
             border: 1px solid var(--glass-border);
@@ -102,14 +99,13 @@
             background: rgba(255,255,255,0.05);
         }
 
-        /* --- 4. FULL SCREEN TRANSPARENT MENU --- */
         .nav-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.85); /* Slightly dark to make text readable over map */
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(15px);
             z-index: 2000;
             display: flex;
@@ -187,7 +183,6 @@
             background: rgba(255,255,255,0.05);
         }
 
-        /* --- 5. TRANSPARENT PAGE CONTAINERS --- */
         .page-container {
             display: none;
             position: fixed;
@@ -206,7 +201,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* The Glass Card */
         .glass-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -255,7 +249,6 @@
             padding: 0;
         }
 
-        /* Transparent Buttons */
         .btn-transparent {
             background: transparent;
             border: 1px solid #fff;
@@ -277,7 +270,6 @@
             transform: scale(1.05);
         }
 
-        /* --- 6. D3 VISUALIZATION STYLES --- */
         #chart-container {
             width: 100%;
             height: 100vh;
@@ -316,7 +308,6 @@
             r: 8px;
         }
 
-        /* --- RESPONSIVE TWEAKS --- */
         @media (max-width: 768px) {
             .site-title { font-size: 1rem; }
             .glass-card { padding: 25px 15px; }
