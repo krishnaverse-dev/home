@@ -820,149 +820,162 @@ onclick="window.location.href='mailto:bramhaatma@gmail.com?subject=Hello&body=Pr
         toggleMenu();
     }
 
-    // --- 3. D3 VIZ SETUP ---
+     
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+     // --- 3. D3 VIZ SETUP ---
 
-    const svg = d3.select("#chart-container").append("svg")
-        .attr("width", "100%")
-        .attr("height", "100vh");
+const width = window.innerWidth;
+const height = window.innerHeight;
 
-    const g = svg.append("g");
+const svg = d3.select("#chart-container").append("svg")
+    .attr("width", "100%")
+    .attr("height", "100vh");
 
-    // Zoom setup
-    const zoom = d3.zoom()
-        .scaleExtent([0.1, 4]) // Zoom limits
-        .on("zoom", (event) => {
-            g.attr("transform", event.transform);
-        });
+const g = svg.append("g");
 
-    svg.call(zoom);
-    svg.on("dblclick.zoom", null); // Disable double click zoom
-
-    // Tree Layout
-    // Increased vertical spacing (first param) for clearer text
-    const tree = d3.tree().nodeSize([35, 260]); 
-
-    const root = d3.hierarchy(treeData, d => d.children);
-    root.x0 = height / 2;
-    root.y0 = 0;
-
-    update(root);
-
-    // --- ZOOM & CENTER LOGIC (Responsive) ---
-    function resetZoom() {
-        const isMobile = window.innerWidth < 768;
-        // Adjust scale and position based on device width
-        const scale = isMobile ? 0.45 : 0.75; 
-        const xOffset = isMobile ? 40 : 150;
-
-        const t = d3.zoomIdentity.translate(xOffset, height / 2).scale(scale);
-        
-        svg.transition().duration(1000).call(zoom.transform, t);
-    }
-
-    // Call resetZoom initially
-    resetZoom();
-
-    function update(source) {
-        const treeData = tree(root);
-        const nodes = treeData.descendants(),
-              links = treeData.links();
-
-        nodes.forEach(d => { d.y = d.depth * 280; });
-
-        // --- Nodes ---
-        const node = g.selectAll('g.node')
-            .data(nodes, d => d.id || (d.id = Math.random()));
-
-        const nodeEnter = node.enter().append('g')
-            .attr('class', 'node')
-            .attr("transform", d => "translate(" + source.y0 + "," + source.x0 + ")")
-            .on('click', click);
-
-        nodeEnter.append('circle')
-            .attr('class', 'node')
-            .attr('r', 1e-6)
-            .style("fill", d => d._children ? "#38bdf8" : "#050a14");
-
-        nodeEnter.append('text')
-            .attr("dy", ".35em")
-            .attr("x", d => d.children || d._children ? -15 : 15)
-            .attr("text-anchor", d => d.children || d._children ? "end" : "start")
-            .text(d => d.data.name)
-            .style("fill-opacity", 1e-6);
-
-        const nodeUpdate = nodeEnter.merge(node);
-
-        nodeUpdate.transition()
-            .duration(500)
-            .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
-
-        nodeUpdate.select('circle.node')
-            .attr('r', 6)
-            .style("fill", d => d._children ? "#38bdf8" : "#050a14");
-
-        nodeUpdate.select('text')
-            .style("fill-opacity", 1);
-
-        // --- Links ---
-        const link = g.selectAll('path.link')
-            .data(links, d => d.target.id);
-
-        const linkEnter = link.enter().insert('path', "g")
-            .attr("class", "link")
-            .attr('d', d => {
-                const o = {x: source.x0, y: source.y0};
-                return diagonal(o, o);
-            });
-
-        const linkUpdate = linkEnter.merge(link);
-        linkUpdate.transition().duration(500).attr('d', d => diagonal(d.source, d.target));
-
-        const nodeExit = node.exit().transition().duration(500)
-            .attr("transform", d => "translate(" + source.y + "," + source.x + ")")
-            .remove();
-
-        nodeExit.select('circle').attr('r', 1e-6);
-        nodeExit.select('text').style('fill-opacity', 1e-6);
-        
-        link.exit().transition().duration(500).attr('d', d => {
-            const o = {x: source.x, y: source.y};
-            return diagonal(o, o);
-        }).remove();
-
-        nodes.forEach(d => {
-            d.x0 = d.x;
-            d.y0 = d.y;
-        });
-
-        function diagonal(s, d) {
-            return `M ${s.y} ${s.x}
-                    C ${(s.y + d.y) / 2} ${s.x},
-                      ${(s.y + d.y) / 2} ${d.x},
-                      ${d.y} ${d.x}`;
-        }
-
-        function click(event, d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
-            }
-            update(d);
-        }
-    }
-
-    // Responsive resize listener
-    window.addEventListener('resize', () => {
-        svg.attr("width", window.innerWidth).attr("height", window.innerHeight);
-        // Optional: Re-center on resize
-        // resetZoom(); 
+// Zoom setup
+const zoom = d3.zoom()
+    .scaleExtent([0.1, 4])
+    .on("zoom", (event) => {
+        g.attr("transform", event.transform);
     });
+
+svg.call(zoom);
+svg.on("dblclick.zoom", null);
+
+// Tree Layout
+const tree = d3.tree().nodeSize([35, 260]);
+
+// ---------------- ROOT ----------------
+const root = d3.hierarchy(treeData, d => d.children);
+root.x0 = height / 2;
+root.y0 = 0;
+
+// ✅ ROOT COLLAPSE (यहीं असली काम है)
+function collapseRoot(d) {
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    }
+}
+collapseRoot(root);
+
+// पहली render call
+update(root);
+
+// --- ZOOM & CENTER LOGIC ---
+function resetZoom() {
+    const isMobile = window.innerWidth < 768;
+    const scale = isMobile ? 0.45 : 0.75;
+    const xOffset = isMobile ? 40 : 150;
+
+    const t = d3.zoomIdentity
+        .translate(xOffset, height / 2)
+        .scale(scale);
+
+    svg.transition().duration(1000).call(zoom.transform, t);
+}
+
+resetZoom();
+
+function update(source) {
+
+    const treeData = tree(root);
+    const nodes = treeData.descendants();
+    const links = treeData.links();
+
+    nodes.forEach(d => d.y = d.depth * 280);
+
+    // --- Nodes ---
+    const node = g.selectAll("g.node")
+        .data(nodes, d => d.id || (d.id = Math.random()));
+
+    const nodeEnter = node.enter()
+        .append("g")
+        .attr("class", "node")
+        .attr("transform", `translate(${source.y0},${source.x0})`)
+        .on("click", click);
+
+    nodeEnter.append("circle")
+        .attr("r", 1e-6)
+        .style("fill", d => d._children ? "#38bdf8" : "#050a14");
+
+    nodeEnter.append("text")
+        .attr("dy", ".35em")
+        .attr("x", d => d.children || d._children ? -15 : 15)
+        .attr("text-anchor", d => d.children || d._children ? "end" : "start")
+        .text(d => d.data.name)
+        .style("fill-opacity", 1e-6);
+
+    const nodeUpdate = nodeEnter.merge(node);
+
+    nodeUpdate.transition()
+        .duration(500)
+        .attr("transform", d => `translate(${d.y},${d.x})`);
+
+    nodeUpdate.select("circle")
+        .attr("r", 6)
+        .style("fill", d => d._children ? "#38bdf8" : "#050a14");
+
+    nodeUpdate.select("text")
+        .style("fill-opacity", 1);
+
+    // --- Links ---
+    const link = g.selectAll("path.link")
+        .data(links, d => d.target.id);
+
+    const linkEnter = link.enter()
+        .insert("path", "g")
+        .attr("class", "link")
+        .attr("d", d => {
+            const o = { x: source.x0, y: source.y0 };
+            return diagonal(o, o);
+        });
+
+    linkEnter.merge(link)
+        .transition()
+        .duration(500)
+        .attr("d", d => diagonal(d.source, d.target));
+
+    node.exit().transition()
+        .duration(500)
+        .remove();
+
+    link.exit().transition()
+        .duration(500)
+        .remove();
+
+    nodes.forEach(d => {
+        d.x0 = d.x;
+        d.y0 = d.y;
+    });
+
+    function diagonal(s, d) {
+        return `
+            M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}
+        `;
+    }
+
+    function click(event, d) {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+        update(d);
+    }
+}
+
+// Resize
+window.addEventListener("resize", () => {
+    svg.attr("width", window.innerWidth)
+       .attr("height", window.innerHeight);
+});
 
 </script>
 </body>
