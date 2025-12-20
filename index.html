@@ -820,7 +820,7 @@ onclick="window.location.href='mailto:bramhaatma@gmail.com?subject=Hello&body=Pr
         toggleMenu();
     }
 
-     // --- 3. D3 VIZ SETUP ---
+	// --- 3. D3 VIZ SETUP ---
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -847,53 +847,63 @@ const tree = d3.tree().nodeSize([35, 260]);
 // ---------------- ROOT ----------------
 const root = d3.hierarchy(treeData, d => d.children);
 root.x0 = height / 2;
-root.y0 = 0;
+root.y0 = width / 2; // ✅ CENTER ROOT
 
-// ✅ ROOT COLLAPSE
-function collapseRoot(d) {
+// ✅ COLLAPSE ALL CHILDREN INITIALLY
+function collapseAll(d) {
     if (d.children) {
         d._children = d.children;
+        d._children.forEach(collapseAll);
         d.children = null;
     }
 }
-collapseRoot(root);
+collapseAll(root);
 
-// 🔵 NEW: one-level expand
-function expandOneLevel(d) {
-    if (d._children) {
-        d.children = d._children;
-        d._children = null;
-    }
-}
-
-// 🔵 NEW: step-by-step recursive expand
-function expandStepByStep(d, delay = 300) {
-    if (!d._children) return;
-
-    expandOneLevel(d);
-    update(d);
-
-    d.children.forEach((child, i) => {
-        setTimeout(() => {
-            expandStepByStep(child, delay);
-        }, delay * (i + 1));
+// ---------- 🔵 LEVEL BY LEVEL EXPAND ----------
+function expandOneLevel(nodes) {
+    const nextLevel = [];
+    nodes.forEach(d => {
+        if (d._children) {
+            d.children = d._children;
+            d._children = null;
+            nextLevel.push(...d.children);
+        }
     });
+    return nextLevel;
 }
 
-// पहली render call
+function expandByLevel(startNode, delay = 400) {
+    let queue = [startNode];
+
+    function step() {
+        queue = expandOneLevel(queue);
+        if (queue.length > 0) {
+            update(startNode);
+            setTimeout(step, delay);
+        }
+    }
+
+    step();
+}
+
+// First render
 update(root);
 
 // --- ZOOM & CENTER LOGIC ---
 function resetZoom() {
     const isMobile = window.innerWidth < 768;
     const scale = isMobile ? 0.45 : 0.75;
-    const xOffset = isMobile ? 40 : 150;
+
+    const centerX = width / 2;
+    const centerY = height / 2;
 
     const t = d3.zoomIdentity
-        .translate(xOffset, height / 2)
+        .translate(centerX, centerY)
         .scale(scale);
 
-    svg.transition().duration(1000).call(zoom.transform, t);
+    svg.transition()
+        .duration(800)
+        .call(zoom.transform, t);
 }
 
 resetZoom();
@@ -904,7 +914,7 @@ function update(source) {
     const nodes = treeData.descendants();
     const links = treeData.links();
 
-    nodes.forEach(d => d.y = d.depth * 280);
+    nodes.forEach(d => d.y = d.depth * 280); // ⚡ right spacing
 
     // --- Nodes ---
     const node = g.selectAll("g.node")
@@ -974,14 +984,14 @@ function update(source) {
         `;
     }
 
-    // 🔴 CHANGED: click behavior
+    // ✅ CLICK LOGIC
     function click(event, d) {
         if (d.children) {
             d._children = d.children;
             d.children = null;
             update(d);
         } else {
-            expandStepByStep(d, 300);
+            expandByLevel(d, 400); // 🔥 level-by-level expand
         }
     }
 }
@@ -991,7 +1001,6 @@ window.addEventListener("resize", () => {
     svg.attr("width", window.innerWidth)
        .attr("height", window.innerHeight);
 });
-
 </script>
 </body>
 </html>
