@@ -855,76 +855,165 @@ if (!isHome) {
         toggleMenu();
     }
 
-	    // --- 2. D3 LOGIC ---
-    const width = window.innerWidth, height = window.innerHeight;
-    const svg = d3.select("#chart-container").append("svg").attr("width", "100%").attr("height", "100vh");
-    const g = svg.append("g");
-    const zoom = d3.zoom().scaleExtent([0.1, 4]).on("zoom", (e) => g.attr("transform", e.transform));
-    svg.call(zoom);
+	    const width = window.innerWidth;
+const height = window.innerHeight;
 
-    const tree = d3.tree().nodeSize([45, 280]);
-    const root = d3.hierarchy(treeData);
+const svg = d3.select("#chart-container")
+    .append("svg")
+    .attr("width", "100%")
+    .attr("height", "100vh");
 
-    // COLLAPSE ROOT ITSELF
-    function collapseFull(d) {
-        if (d.children) {
-            d._children = d.children;
-            d._children.forEach(collapseFull);
-            d.children = null;
-        }
+const g = svg.append("g");
+
+// ZOOM
+const zoom = d3.zoom()
+    .scaleExtent([0.1, 4])
+    .on("zoom", (e) => g.attr("transform", e.transform));
+
+svg.call(zoom);
+
+// TREE
+const tree = d3.tree().nodeSize([45, 280]);
+const root = d3.hierarchy(treeData);
+
+// COLLAPSE ALL
+function collapseFull(d) {
+    if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapseFull);
+        d.children = null;
     }
-    collapseFull(root);
+}
+collapseFull(root);
 
-    root.x0 = height / 2; root.y0 = 0;
-    update(root);
-    resetZoom();
+// ROOT INITIAL
+root.x0 = 0;
+root.y0 = 0;
 
-    function update(source) {
-        const nodes = tree(root).descendants();
-        const links = tree(root).links();
-        nodes.forEach(d => d.y = d.depth * 280);
+// SCREEN CENTER
+function getCenter() {
+    return {
+        x: height / 2,
+        y: document.getElementById("chart-container").clientWidth / 2
+    };
+}
 
-        const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = Math.random()));
+update(root);
+lockRoot(); // initial lock
 
-        const nodeEnter = node.enter().append('g')
-            .attr('class', 'node')
-            .attr("transform", d => `translate(${source.y0},${source.x0})`)
-            .on('click', (event, d) => {
-                if (d.children) { d._children = d.children; d.children = null; }
-                else { d.children = d._children; d._children = null; }
-                update(d);
-            });
+// ---------------- UPDATE ----------------
+function update(source) {
 
-        nodeEnter.append('circle').attr('r', 1e-6)
-            .style("fill", d => d._children ? "var(--highlight)" : "#000");
+    const nodes = tree(root).descendants();
+    const links = tree(root).links();
 
-        nodeEnter.append('text').attr("dy", ".35em")
-            .attr("x", d => d.children || d._children ? -18 : 18)
-            .attr("text-anchor", d => d.children || d._children ? "end" : "start")
-            .text(d => d.data.name);
+    nodes.forEach(d => d.y = d.depth * 280);
 
-        const nodeUpdate = nodeEnter.merge(node);
-        nodeUpdate.transition().duration(500).attr("transform", d => `translate(${d.y},${d.x})`);
-        nodeUpdate.select('circle').attr('r', 8).style("fill", d => d._children ? "var(--highlight)" : "#000");
+    // NODES
+    const node = g.selectAll("g.node")
+        .data(nodes, d => d.id || (d.id = Math.random()));
 
-        node.exit().transition().duration(500).attr("transform", d => `translate(${source.y},${source.x})`).remove();
+    const nodeEnter = node.enter()
+        .append("g")
+        .attr("class", "node")
+        .attr("transform", `translate(${source.y0},${source.x0})`)
+        .on("click", (event, d) => {
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d);
+        });
 
-        const link = g.selectAll('path.link').data(links, d => d.target.id);
-        const linkEnter = link.enter().insert('path', "g").attr("class", "link")
-            .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
+    nodeEnter.append("circle")
+        .attr("r", 1e-6)
+        .style("fill", d => d._children ? "var(--highlight)" : "#000");
 
-        linkEnter.merge(link).transition().duration(500).attr('d', d => diagonal(d.source, d.target));
-        link.exit().transition().duration(500).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
+    nodeEnter.append("text")
+        .attr("dy", ".35em")
+        .attr("x", d => d.children || d._children ? -18 : 18)
+        .attr("text-anchor", d => d.children || d._children ? "end" : "start")
+        .text(d => d.data.name);
 
-        nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
-    }
+    const nodeUpdate = nodeEnter.merge(node);
 
-    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+    nodeUpdate.transition()
+        .duration(500)
+        .attr("transform", d => `translate(${d.y},${d.x})`);
 
-    function resetZoom() {
-        const t = d3.zoomIdentity.translate(window.innerWidth < 768 ? 80 : 250, height / 2).scale(0.7);
-        svg.transition().duration(1000).call(zoom.transform, t);
-    }
+    nodeUpdate.select("circle")
+        .attr("r", 8)
+        .style("fill", d => d._children ? "var(--highlight)" : "#000");
+
+    node.exit()
+        .transition()
+        .duration(500)
+        .attr("transform", `translate(${source.y},${source.x})`)
+        .remove();
+
+    // LINKS
+    const link = g.selectAll("path.link")
+        .data(links, d => d.target.id);
+
+    const linkEnter = link.enter()
+        .insert("path", "g")
+        .attr("class", "link")
+        .attr("d", () => diagonal(
+            { x: source.x0, y: source.y0 },
+            { x: source.x0, y: source.y0 }
+        ));
+
+    linkEnter.merge(link)
+        .transition()
+        .duration(500)
+        .attr("d", d => diagonal(d.source, d.target));
+
+    link.exit()
+        .transition()
+        .duration(500)
+        .attr("d", () => diagonal(
+            { x: source.x, y: source.y },
+            { x: source.x, y: source.y }
+        ))
+        .remove();
+
+    nodes.forEach(d => {
+        d.x0 = d.x;
+        d.y0 = d.y;
+    });
+
+    lockRoot(); // 🔒 ROOT LOCK AFTER EVERY UPDATE
+}
+
+// ---------------- ROOT LOCK ----------------
+function lockRoot() {
+    const c = getCenter();
+
+    const t = d3.zoomIdentity
+        .translate(
+            c.y - root.y,
+            c.x - root.x
+        )
+        .scale(0.7);
+
+    svg.transition()
+        .duration(500)
+        .call(zoom.transform, t);
+}
+
+// ---------------- DIAGONAL ----------------
+function diagonal(s, d) {
+    return `
+        M ${s.y} ${s.x}
+        C ${(s.y + d.y) / 2} ${s.x},
+          ${(s.y + d.y) / 2} ${d.x},
+          ${d.y} ${d.x}
+    `;
+}
+
 	function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
     function showHome() { 
         document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
