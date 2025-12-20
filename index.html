@@ -808,7 +808,7 @@ onclick="window.location.href='mailto:bramhaatma@gmail.com?subject=Hello&body=Pr
         pages.forEach(p => p.style.display = 'none');
 
          // tip and bar
-const isHome = document.body.classList.contains('home');
+const isHome = window.location.pathname === "/" || window.location.pathname.endsWith("index.html");
 
 if (!isHome) {
     const controlTip = document.getElementById('control-tip');
@@ -817,7 +817,6 @@ if (!isHome) {
     if (controlTip) controlTip.style.display = 'none';
     if (latestBar) latestBar.style.display = 'none';
 }
-
         // 3. Show D3 Chart
         const chart = document.getElementById('chart-container');
         chart.style.opacity = '1';
