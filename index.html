@@ -820,8 +820,6 @@ onclick="window.location.href='mailto:bramhaatma@gmail.com?subject=Hello&body=Pr
         toggleMenu();
     }
 
-     
-
      // --- 3. D3 VIZ SETUP ---
 
 const width = window.innerWidth;
@@ -851,7 +849,7 @@ const root = d3.hierarchy(treeData, d => d.children);
 root.x0 = height / 2;
 root.y0 = 0;
 
-// ✅ ROOT COLLAPSE (यहीं असली काम है)
+// ✅ ROOT COLLAPSE
 function collapseRoot(d) {
     if (d.children) {
         d._children = d.children;
@@ -859,6 +857,28 @@ function collapseRoot(d) {
     }
 }
 collapseRoot(root);
+
+// 🔵 NEW: one-level expand
+function expandOneLevel(d) {
+    if (d._children) {
+        d.children = d._children;
+        d._children = null;
+    }
+}
+
+// 🔵 NEW: step-by-step recursive expand
+function expandStepByStep(d, delay = 300) {
+    if (!d._children) return;
+
+    expandOneLevel(d);
+    update(d);
+
+    d.children.forEach((child, i) => {
+        setTimeout(() => {
+            expandStepByStep(child, delay);
+        }, delay * (i + 1));
+    });
+}
 
 // पहली render call
 update(root);
@@ -937,13 +957,8 @@ function update(source) {
         .duration(500)
         .attr("d", d => diagonal(d.source, d.target));
 
-    node.exit().transition()
-        .duration(500)
-        .remove();
-
-    link.exit().transition()
-        .duration(500)
-        .remove();
+    node.exit().transition().duration(500).remove();
+    link.exit().transition().duration(500).remove();
 
     nodes.forEach(d => {
         d.x0 = d.x;
@@ -959,15 +974,15 @@ function update(source) {
         `;
     }
 
+    // 🔴 CHANGED: click behavior
     function click(event, d) {
         if (d.children) {
             d._children = d.children;
             d.children = null;
+            update(d);
         } else {
-            d.children = d._children;
-            d._children = null;
+            expandStepByStep(d, 300);
         }
-        update(d);
     }
 }
 
