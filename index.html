@@ -803,29 +803,14 @@ onclick="window.location.href='mailto:bramhaatma@gmail.com?subject=Hello&body=Pr
 
     // --- 2. NAVIGATION LOGIC ---
 
-    function toggleMenu() {
-        const overlay = document.getElementById('navOverlay');
-        overlay.classList.toggle('active');
-    }
-
-    function showHome() {
-        // 1. Close Menu
+    function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
+    function showHome() { 
+        document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
         document.getElementById('navOverlay').classList.remove('active');
-        
-        // 2. Hide all page containers
-        const pages = document.querySelectorAll('.page-container');
-        pages.forEach(p => p.style.display = 'none');
-
-         // tip and bar
-const isHome = window.location.pathname === "/" || window.location.pathname.endsWith("index.html");
-
-if (!isHome) {
-    const controlTip = document.getElementById('control-tip');
-    const latestBar = document.getElementById('latest-bar');
-
-    if (controlTip) controlTip.style.display = 'none';
-    if (latestBar) latestBar.style.display = 'none';
-}
+        document.getElementById('latest-bar').style.display = 'block';
+        document.getElementById('control-tip').style.display = 'block';
+    }
+         
         // 3. Show D3 Chart
         const chart = document.getElementById('chart-container');
         chart.style.opacity = '1';
@@ -834,21 +819,12 @@ if (!isHome) {
         resetZoom();
     }
 
-    function showPage(pageId) {
-        // 1. Close Menu
-        document.getElementById('navOverlay').classList.remove('active');
-
-        // 2. Hide all other pages
-        document.querySelectorAll('.page-container').forEach(el => {
-            el.style.display = 'none';
-        });
-
-        // 3. Show Target Page
-        const target = document.getElementById(pageId);
-        if (target) {
-            target.style.display = 'block';
-            target.scrollTop = 0; // Scroll to top
-        }
+    function showPage(id) {
+        if(document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
+        document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        document.getElementById('latest-bar').style.display = 'none';
+        document.getElementById('control-tip').style.display = 'none';
     }
 
     function shareSite() {
@@ -1023,20 +999,6 @@ function diagonal(s, d) {
     `;
 }
 
-	function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
-    function showHome() { 
-        document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
-        document.getElementById('navOverlay').classList.remove('active');
-        document.getElementById('latest-bar').style.display = 'block';
-        document.getElementById('control-tip').style.display = 'block';
-    }
-    function showPage(id) {
-        if(document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
-        document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-        document.getElementById('latest-bar').style.display = 'none';
-        document.getElementById('control-tip').style.display = 'none';
-    }
 	function goLatest() {
     window.location.href = "#latest";
 }
