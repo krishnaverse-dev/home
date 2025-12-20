@@ -855,187 +855,90 @@ if (!isHome) {
         toggleMenu();
     }
 
-	// --- 3. D3 VIZ SETUP ---
+	    // --- 2. D3 LOGIC ---
+    const width = window.innerWidth, height = window.innerHeight;
+    const svg = d3.select("#chart-container").append("svg").attr("width", "100%").attr("height", "100vh");
+    const g = svg.append("g");
+    const zoom = d3.zoom().scaleExtent([0.1, 4]).on("zoom", (e) => g.attr("transform", e.transform));
+    svg.call(zoom);
 
-const width = window.innerWidth;
-const height = window.innerHeight;
+    const tree = d3.tree().nodeSize([45, 280]);
+    const root = d3.hierarchy(treeData);
 
-const svg = d3.select("#chart-container").append("svg")
-    .attr("width", "100%")
-    .attr("height", "100vh");
-
-const g = svg.append("g");
-
-// Zoom setup
-const zoom = d3.zoom()
-    .scaleExtent([0.1, 4])
-    .on("zoom", (event) => {
-        g.attr("transform", event.transform);
-    });
-
-svg.call(zoom);
-svg.on("dblclick.zoom", null);
-
-// Tree Layout
-const tree = d3.tree().nodeSize([35, 260]);
-
-// ---------------- ROOT ----------------
-const root = d3.hierarchy(treeData, d => d.children);
-root.x0 = height / 2;
-root.y0 = width / 2; // ✅ CENTER ROOT
-
-// ✅ COLLAPSE ALL CHILDREN INITIALLY
-function collapseAll(d) {
-    if (d.children) {
-        d._children = d.children;
-        d._children.forEach(collapseAll);
-        d.children = null;
-    }
-}
-collapseAll(root);
-
-// ---------- 🔵 LEVEL BY LEVEL EXPAND ----------
-function expandOneLevel(nodes) {
-    const nextLevel = [];
-    nodes.forEach(d => {
-        if (d._children) {
-            d.children = d._children;
-            d._children = null;
-            nextLevel.push(...d.children);
-        }
-    });
-    return nextLevel;
-}
-
-function expandByLevel(startNode, delay = 400) {
-    let queue = [startNode];
-
-    function step() {
-        queue = expandOneLevel(queue);
-        if (queue.length > 0) {
-            update(startNode);
-            setTimeout(step, delay);
-        }
-    }
-
-    step();
-}
-
-// First render
-update(root);
-
-// --- ZOOM & CENTER LOGIC ---
-function resetZoom() {
-    const isMobile = window.innerWidth < 768;
-    const scale = isMobile ? 0.45 : 0.75;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-
-    const t = d3.zoomIdentity
-        .translate(centerX, centerY)
-        .scale(scale);
-
-    svg.transition()
-        .duration(800)
-        .call(zoom.transform, t);
-}
-
-resetZoom();
-
-function update(source) {
-
-    const treeData = tree(root);
-    const nodes = treeData.descendants();
-    const links = treeData.links();
-
-    nodes.forEach(d => d.y = d.depth * 280); // ⚡ right spacing
-
-    // --- Nodes ---
-    const node = g.selectAll("g.node")
-        .data(nodes, d => d.id || (d.id = Math.random()));
-
-    const nodeEnter = node.enter()
-        .append("g")
-        .attr("class", "node")
-        .attr("transform", `translate(${source.y0},${source.x0})`)
-        .on("click", click);
-
-    nodeEnter.append("circle")
-        .attr("r", 1e-6)
-        .style("fill", d => d._children ? "#38bdf8" : "#050a14");
-
-    nodeEnter.append("text")
-        .attr("dy", ".35em")
-        .attr("x", d => d.children || d._children ? -15 : 15)
-        .attr("text-anchor", d => d.children || d._children ? "end" : "start")
-        .text(d => d.data.name)
-        .style("fill-opacity", 1e-6);
-
-    const nodeUpdate = nodeEnter.merge(node);
-
-    nodeUpdate.transition()
-        .duration(500)
-        .attr("transform", d => `translate(${d.y},${d.x})`);
-
-    nodeUpdate.select("circle")
-        .attr("r", 6)
-        .style("fill", d => d._children ? "#38bdf8" : "#050a14");
-
-    nodeUpdate.select("text")
-        .style("fill-opacity", 1);
-
-    // --- Links ---
-    const link = g.selectAll("path.link")
-        .data(links, d => d.target.id);
-
-    const linkEnter = link.enter()
-        .insert("path", "g")
-        .attr("class", "link")
-        .attr("d", d => {
-            const o = { x: source.x0, y: source.y0 };
-            return diagonal(o, o);
-        });
-
-    linkEnter.merge(link)
-        .transition()
-        .duration(500)
-        .attr("d", d => diagonal(d.source, d.target));
-
-    node.exit().transition().duration(500).remove();
-    link.exit().transition().duration(500).remove();
-
-    nodes.forEach(d => {
-        d.x0 = d.x;
-        d.y0 = d.y;
-    });
-
-    function diagonal(s, d) {
-        return `
-            M ${s.y} ${s.x}
-            C ${(s.y + d.y) / 2} ${s.x},
-              ${(s.y + d.y) / 2} ${d.x},
-              ${d.y} ${d.x}
-        `;
-    }
-
-    // ✅ CLICK LOGIC
-    function click(event, d) {
+    // COLLAPSE ROOT ITSELF
+    function collapseFull(d) {
         if (d.children) {
             d._children = d.children;
+            d._children.forEach(collapseFull);
             d.children = null;
-            update(d);
-        } else {
-            expandByLevel(d, 400); // 🔥 level-by-level expand
         }
     }
-}
+    collapseFull(root);
 
-// Resize
-window.addEventListener("resize", () => {
-    svg.attr("width", window.innerWidth)
-       .attr("height", window.innerHeight);
-});
+    root.x0 = height / 2; root.y0 = 0;
+    update(root);
+    resetZoom();
+
+    function update(source) {
+        const nodes = tree(root).descendants();
+        const links = tree(root).links();
+        nodes.forEach(d => d.y = d.depth * 280);
+
+        const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = Math.random()));
+
+        const nodeEnter = node.enter().append('g')
+            .attr('class', 'node')
+            .attr("transform", d => `translate(${source.y0},${source.x0})`)
+            .on('click', (event, d) => {
+                if (d.children) { d._children = d.children; d.children = null; }
+                else { d.children = d._children; d._children = null; }
+                update(d);
+            });
+
+        nodeEnter.append('circle').attr('r', 1e-6)
+            .style("fill", d => d._children ? "var(--highlight)" : "#000");
+
+        nodeEnter.append('text').attr("dy", ".35em")
+            .attr("x", d => d.children || d._children ? -18 : 18)
+            .attr("text-anchor", d => d.children || d._children ? "end" : "start")
+            .text(d => d.data.name);
+
+        const nodeUpdate = nodeEnter.merge(node);
+        nodeUpdate.transition().duration(500).attr("transform", d => `translate(${d.y},${d.x})`);
+        nodeUpdate.select('circle').attr('r', 8).style("fill", d => d._children ? "var(--highlight)" : "#000");
+
+        node.exit().transition().duration(500).attr("transform", d => `translate(${source.y},${source.x})`).remove();
+
+        const link = g.selectAll('path.link').data(links, d => d.target.id);
+        const linkEnter = link.enter().insert('path', "g").attr("class", "link")
+            .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
+
+        linkEnter.merge(link).transition().duration(500).attr('d', d => diagonal(d.source, d.target));
+        link.exit().transition().duration(500).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
+
+        nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function resetZoom() {
+        const t = d3.zoomIdentity.translate(window.innerWidth < 768 ? 80 : 250, height / 2).scale(0.7);
+        svg.transition().duration(1000).call(zoom.transform, t);
+    }
+	function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
+    function showHome() { 
+        document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
+        document.getElementById('navOverlay').classList.remove('active');
+        document.getElementById('latest-bar').style.display = 'block';
+        document.getElementById('control-tip').style.display = 'block';
+    }
+    function showPage(id) {
+        if(document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
+        document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        document.getElementById('latest-bar').style.display = 'none';
+        document.getElementById('control-tip').style.display = 'none';
+    }
 </script>
 </body>
 </html>
