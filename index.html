@@ -117,6 +117,17 @@
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); white-space: nowrap;
         }
 
+        /* LATEST BAR */
+        #latest-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px); padding: 12px; border-radius: 15px;
+            text-align: center; cursor: pointer; z-index: 900; transition: 0.3s;
+        }
+        #latest-bar span { color: var(--highlight); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+
+
         .menu-btn:hover {
             border-color: var(--highlight);
             color: var(--highlight);
@@ -359,6 +370,7 @@
             </button>
         </div>
     <div id="control-tip">Click on "अक्षरातीत" to begin exploration</div>
+<div id="latest-bar" onclick="showPage('latest')"><span>✨ View Latest News ✨</span></div>
     </header>
 
     <!-- Navigation Overlay -->
@@ -372,6 +384,7 @@
             <li style="transition-delay: 0.3s"><a onclick="showPage('seva')">Seva Puja</a></li>
             <li style="transition-delay: 0.35s"><a onclick="showPage('nitya')">Nitya Paath</a></li>
             <li style="transition-delay: 0.4s"><a onclick="showPage('pushpanjali')">Prathana Pushpanjali</a></li>
+<li><a onclick="showPage('latest')">Latest Updates</a></li>
             <li style="transition-delay: 0.45s"><a onclick="shareSite()">Share</a></li>
             <li style="transition-delay: 0.5s"><a onclick="showPage('contact')">Contact Us</a></li>
         </ul>
@@ -380,7 +393,8 @@
     <!-- 1. BACKGROUND MAP (D3.js) -->
     <div id="chart-container"></div>
 
-    <!-- 2. CONTENT PAGES (Hidden by default) -->
+        <!-- letest -->
+    <div id="latest" class="page-container"><div class="glass-card"><h1>Latest Updates</h1><p>100% Data Hierarchy restored.</p><button class="btn-transparent" onclick="showHome()">Close</button></div></div>
 
     <!-- Shree Tartam Sagar -->
     <div id="tartam" class="page-container">
