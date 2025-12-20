@@ -370,7 +370,7 @@
             </button>
         </div>
     <div id="control-tip">Click on "अक्षरातीत" to begin exploration</div>
-<div id="latest-bar" onclick="showPage('latest')"><span>✨ View Latest News ✨</span></div>
+<div id="latest-bar" class="clickable" onclick="goLatest()">✨ View Latest News ✨</div>
     </header>
 
     <!-- Navigation Overlay -->
@@ -1028,6 +1028,10 @@ function diagonal(s, d) {
         document.getElementById('latest-bar').style.display = 'none';
         document.getElementById('control-tip').style.display = 'none';
     }
+	function goLatest() {
+    window.location.href = "#latest";
+}
+
 </script>
 </body>
 </html>
