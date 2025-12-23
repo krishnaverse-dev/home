@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+8<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,39 +28,49 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); 
             pointer-events: none;
         }
-        .header-content { width: 100%; display: flex; justify-content: space-between; align-items: center; pointer-events: auto; }
-
-
-        /* Logo Section */
-.logo-wrap {
+        /* Header content */
+.header-content {
     display: flex;
     align-items: center;
-    gap: 14px;
+    justify-content: space-between;
 }
 
-/* Logo Image / Icon */
+/* Logo + text */
+.logo-area {
+    display: flex;
+    flex-direction: row !important; /* 🔥 force row */
+    align-items: center;
+    gap: 10px;
+    height: 70px;
+    text-decoration: none;
+}
+
+/* Logo image */
 .logo-img {
     width: 42px;
     height: 42px;
-    object-fit: cover;      /* IMPORTANT */
-    border-radius: 50%;     /* makes it round */
+    border-radius: 50%;
+    object-fit: cover;
     border: 2px solid rgba(255,255,255,0.6);
-    display: block;
+    flex-shrink: 0;
 }
 
+/* Title + slogan wrapper */
+.site-title-wrap {
+    display: flex;
+    flex-direction: column;   /* only here */
+    justify-content: center;
+}
+
+/* Title */
 .site-title {
     font-size: 1.15rem;
     font-weight: 600;
     color: #ffffff;
     line-height: 1;
-    white-space: nowrap;
 }
 
-.site-title-wrap {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
+/* Slogan */
 .site-slogan {
     font-size: 0.55rem;
     letter-spacing: 2.5px;
@@ -68,16 +78,6 @@
     margin-top: 2px;
     text-transform: uppercase;
     line-height: 1;
-}
-
-.logo-area {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    height: 70px;
-    text-decoration: none;
-    white-space: nowrap;
 }
 
         .menu-btn {
@@ -165,9 +165,7 @@
     <div class="header-content">
 
         <a onclick="showHome()" class="logo-area">
-            <img src="thumbnail/Krishnaverse.jpg" alt="Logo" class="logo-img">
-
-            <div class="site-title-wrap">
+            <img src="thumbnail/Krishnaverse.jpg" alt="Logo" class="logo-img"><div class="site-title-wrap">
                 <span class="site-title">Krishnaverse</span>
                 <span class="site-slogan">Vedic Research</span>
             </div>
