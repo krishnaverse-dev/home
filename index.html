@@ -40,33 +40,39 @@
 
 /* Logo Image / Icon */
 .logo-img {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
+    object-fit: cover;      /* IMPORTANT */
+    border-radius: 50%;     /* makes it round */
+    border: 2px solid rgba(255,255,255,0.6);
+    display: block;
 }
 
-/* Text container */
-.logo-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-}
-
-/* Title */
-.logo-title {
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: 2px;
+.site-title {
+    font-size: 1.15rem;
+    font-weight: 600;
     color: #ffffff;
-    margin: 0;
+    line-height: 1;
+    white-space: nowrap;   /* टूटेगा नहीं */
 }
 
-/* Slogan */
-.logo-slogan {
-    font-size: 13px;
-    letter-spacing: 4px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: 4px;
+.site-slogan {
+    font-size: 0.55rem;
+    letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 2px;
     text-transform: uppercase;
+    line-height: 1;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;      /* vertical center */
+    gap: 10px;                /* logo ↔ text gap */
+    height: 70px;             /* header ke equal */
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;     
 }
 
         .menu-btn {
@@ -151,14 +157,21 @@
 <body>
 
     <header>
-        <div class="header-content">
-            <a onclick="showHome()" <div class="site-title-wrap">
-    <img src="thumbnail/Krishnaverse.jpg" alt="Logo"      class="logo-img">
-    <span class="site-title">Krishnaverse</span>
-    <span class="site-slogan">vedic research</span>
-            <button class="menu-btn" onclick="toggleMenu()">MENU ☰</button>
-        </div>
-    </header>
+    <div class="header-content">
+
+        <a onclick="showHome()" class="logo-area">
+            <img src="thumbnail/Krishnaverse.jpg" alt="Logo" class="logo-img">
+
+            <div class="site-title-wrap">
+                <span class="site-title">Krishnaverse</span>
+                <span class="site-slogan">Vedic Research</span>
+            </div>
+        </a>
+
+        <button class="menu-btn" onclick="toggleMenu()">MENU ☰</button>
+
+    </div>
+</header>
 
     <div id="control-tip">Click on "अक्षरातीत (पुर्णब्रम्ह)" to begin exploration</div>
     <div id="latest-bar" onclick="showPage('latest')">✨ View Latest News ✨</div>
