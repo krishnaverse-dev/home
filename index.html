@@ -29,9 +29,45 @@
             pointer-events: none;
         }
         .header-content { width: 100%; display: flex; justify-content: space-between; align-items: center; pointer-events: auto; }
-        .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
-        .logo-img { height: 45px; width: 45px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); object-fit: cover; }
-        .site-title { font-size: 1.2rem; font-weight: 600; color: #fff; }
+
+
+        /* Logo Section */
+.logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Logo Image / Icon */
+.logo-img {
+    width: 48px;
+    height: 48px;
+}
+
+/* Text container */
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+/* Title */
+.logo-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #ffffff;
+    margin: 0;
+}
+
+/* Slogan */
+.logo-slogan {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
+    text-transform: uppercase;
+}
 
         .menu-btn {
             background: transparent; border: 1px solid var(--glass-border);
@@ -116,10 +152,10 @@
 
     <header>
         <div class="header-content">
-            <a onclick="showHome()" class="logo-area">
-                <img src="thumbnail/Krishnaverse.jpg" alt="Logo" class="logo-img">
-                <span class="site-title">Krishnaverse</span>
-            </a>
+            <a onclick="showHome()" <div class="site-title-wrap">
+    <img src="thumbnail/Krishnaverse.jpg" alt="Logo"      class="logo-img">
+    <span class="site-title">Krishnaverse</span>
+    <span class="site-slogan">vedic research</span>
             <button class="menu-btn" onclick="toggleMenu()">MENU ☰</button>
         </div>
     </header>
@@ -151,7 +187,10 @@
         <div class="glass-card">
             <h1>Latest Updates</h1>
             <p>100% Data Hierarchy restored. All sections are now active.</p>
-            <p>Up Quark</p>
+<p>Open string</p>
+<p>Closed string</p>
+<p>Superstrings</p>
+<p>Up Quark</p>
 <p>Down Quark</p>
 <p>Charm Quark</p>
 <p>Strange Quark</p>
