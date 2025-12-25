@@ -704,7 +704,7 @@
         ]
     };
 
-        // --- 3. D3 RENDER LOGIC ---
+// --- 3. D3 RENDER LOGIC ---
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -716,18 +716,18 @@ const svg = d3.select("#chart-container")
 
 const g = svg.append("g");
 
-// ZOOM
+// ---------------- ZOOM ----------------
 const zoom = d3.zoom()
     .scaleExtent([0.1, 4])
     .on("zoom", (e) => g.attr("transform", e.transform));
 
 svg.call(zoom);
 
-// TREE
+// ---------------- TREE ----------------
 const tree = d3.tree().nodeSize([45, 280]);
 const root = d3.hierarchy(treeData);
 
-// COLLAPSE ALL
+// ---------------- COLLAPSE ALL ----------------
 function collapseFull(d) {
     if (d.children) {
         d._children = d.children;
@@ -737,11 +737,11 @@ function collapseFull(d) {
 }
 collapseFull(root);
 
-// ROOT INITIAL
+// initial position
 root.x0 = 0;
 root.y0 = 0;
 
-// SCREEN CENTER
+// ---------------- CENTER UTILS ----------------
 function getCenter() {
     return {
         x: height / 2,
@@ -749,10 +749,45 @@ function getCenter() {
     };
 }
 
-update(root);
-lockRoot(); // initial lock
+function centerPoint(x, y, scale = 0.7) {
+    const c = getCenter();
+
+    const t = d3.zoomIdentity
+        .translate(
+            c.y - y * scale,
+            c.x - x * scale
+        )
+        .scale(scale);
+
+    svg.transition()
+        .duration(600)
+        .call(zoom.transform, t);
+}
+
+// ⭐ focus newly opened nodes
+function focusNewNodes(parent) {
+    if (!parent.children || parent.children.length === 0) {
+        centerPoint(parent.x, parent.y);
+        return;
+    }
+
+    let sumX = 0;
+    let sumY = 0;
+
+    parent.children.forEach(c => {
+        sumX += c.x;
+        sumY += c.y;
+    });
+
+    const cx = sumX / parent.children.length;
+    const cy = sumY / parent.children.length;
+
+    centerPoint(cx, cy);
+}
 
 // ---------------- UPDATE ----------------
+let i = 0;
+
 function update(source) {
 
     const nodes = tree(root).descendants();
@@ -760,15 +795,18 @@ function update(source) {
 
     nodes.forEach(d => d.y = d.depth * 280);
 
-    // NODES
+    // ---------------- NODES ----------------
     const node = g.selectAll("g.node")
-        .data(nodes, d => d.id || (d.id = Math.random()));
+        .data(nodes, d => d.id || (d.id = ++i));
 
     const nodeEnter = node.enter()
         .append("g")
         .attr("class", "node")
         .attr("transform", `translate(${source.y0},${source.x0})`)
         .on("click", (event, d) => {
+
+            const hadChildren = !!d.children;
+
             if (d.children) {
                 d._children = d.children;
                 d.children = null;
@@ -776,7 +814,19 @@ function update(source) {
                 d.children = d._children;
                 d._children = null;
             }
+
             update(d);
+
+            // 🧠 wait for layout, then focus
+            requestAnimationFrame(() => {
+                if (!hadChildren) {
+                    // expand → focus on new nodes
+                    focusNewNodes(d);
+                } else {
+                    // collapse → focus back on parent
+                    centerPoint(d.x, d.y);
+                }
+            });
         });
 
     nodeEnter.append("circle")
@@ -805,7 +855,7 @@ function update(source) {
         .attr("transform", `translate(${source.y},${source.x})`)
         .remove();
 
-    // LINKS
+    // ---------------- LINKS ----------------
     const link = g.selectAll("path.link")
         .data(links, d => d.target.id);
 
@@ -835,24 +885,6 @@ function update(source) {
         d.x0 = d.x;
         d.y0 = d.y;
     });
-
-    lockRoot(); // 🔒 ROOT LOCK AFTER EVERY UPDATE
-}
-
-// ---------------- ROOT LOCK ----------------
-function lockRoot() {
-    const c = getCenter();
-
-    const t = d3.zoomIdentity
-        .translate(
-            c.y - root.y,
-            c.x - root.x
-        )
-        .scale(0.7);
-
-    svg.transition()
-        .duration(500)
-        .call(zoom.transform, t);
 }
 
 // ---------------- DIAGONAL ----------------
@@ -864,6 +896,11 @@ function diagonal(s, d) {
           ${d.y} ${d.x}
     `;
 }
+
+// ---------------- INITIAL ----------------
+update(root);
+centerPoint(root.x, root.y);
+
 
 	function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
     function showHome() { 
