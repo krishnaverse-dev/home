@@ -150,27 +150,38 @@
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             border-radius: 20px; padding: 40px 30px; max-width: 900px; margin: 0 auto; text-align: center;
         }
-.glass-card h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--highlight);
-    margin-bottom: 20px;
-    letter-spacing: 1px;
-}
-.glass-card h2 {
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: #e5e7eb;
-    margin-bottom: 15px;
-    opacity: 0.85;
-}
-        .glass-card img { width: 100%; max-width: 300px; border-radius: 10px; margin: 20px 0; }
+
+       .glass-card img { width: 100%; max-width: 300px; border-radius: 10px; margin: 20px 0; }
         .glass-card h1 { color: var(--highlight); margin-bottom: 20px; }
         .glass-card p { line-height: 1.8; color: #e2e8f0; margin-bottom: 15px; }
         .btn-transparent {
             background: transparent; border: 1px solid #fff; color: #fff;
             padding: 12px 30px; border-radius: 50px; cursor: pointer; margin-top: 10px;
         }
+        
+        .post-box {
+    padding: 30px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    text-align: center;
+}
+
+.post-box:last-child {
+    border-bottom: none;
+}
+
+.post-box h2 {
+    color: #e5e7eb;
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+}
+
+.post-box img {
+    width: 100%;
+    max-width: 340px;
+    border-radius: 14px;
+    margin: 0 auto;
+    display: block;
+}
 
         /* D3 CHART */
         #chart-container { width: 100%; height: 100vh; position: absolute; top: 0; left: 0; z-index: 0; }
@@ -218,121 +229,190 @@
 
     <div id="chart-container"></div>
 	
-    <div id="latest" class="page-container">
-        <div class="glass-card">
-            <h1>100% Data restored. All sections are now active. All of these are inside (क्षर पुरुष)</h1>
-<h2>Open string</h2>
-			<img src="thumbnail/Open string.gif" alt="Open string">
+    
 			
-<h2>Closed string</h2>
-			<img src="thumbnail/Closed string.gif" alt="Closed string">
-			
-<h2>Super strings</h2>
-			<img src="thumbnail/Super strings.gif" alt="Super strings">
-			
-<h2>Quarks</h2>
-			<img src="thumbnail/Quarks.jpg" alt="Quarks">
-			
-<h2>Muon</h2>
-			<img src="thumbnail/Muon.jpg" alt="Muon">
-			
-<h2>Tau</h2>
-			<img src="thumbnail/Tau.png" alt="Tau">
-				
+<div id="latest" class="page-container">
+    <div class="glass-card">
 
-<h2>Photon</h2>
-			<img src="thumbnail/Photon.gif" alt="Photon">
-			
-<h2>Gluon</h2>
-			<img src="thumbnail/Gluon.jpg" alt="Gluon">
-			
-<h2>W⁺ Boson</h2>
-			<img src="thumbnail/W⁺ Boson.jpg" alt="W⁺ Boson">
-			
-<h2>W⁻ Boson</h2>
-			<img src="thumbnail/W⁻ Boson.jpg" alt="W⁻ Boson">
-			
-<h2>Z Boson</h2>
-			<img src="thumbnail/Z Boson.jpg" alt="Z Boson">
-			
-<h2>Higgs Boson</h2>
-			<img src="thumbnail/Higgs Boson.jpeg" alt="Higgs Boson">
-			
-<h2>Graviton</h2>
-			<img src="thumbnail/Graviton.gif" alt="Graviton">
-			
+        <h1>100% Data restored. All sections are now active. All of these are inside (क्षर पुरुष)</h1>
 
-<!-- Composite particles -->
-<h2>Hadron</h2>
-			<img src="thumbnail/Hadron.jpg" alt="Hadron">
-			
-<h2>Baryon and meson</h2>
-			<img src="thumbnail/Baryon and meson.jpg" alt="Baryon and meson">
-			
-<h2>Neutron electron and proton</h2>
-			<img src="thumbnail/Neutron electron and proton.jpeg" alt="Neutron electron and proton">
-			
-
-<!-- Atomic level -->
-<h2>Atom</h2>
-            <img src="thumbnail/Atom.gif" alt="Atom">
-			
-<!-- Molecular / matter scale -->
-<h2>Molecule</h2>
-			<img src="thumbnail/Molecule.gif" alt="Molecule">
-			
-<h2>Condensed Matter (Solid / Liquid / Gas / Plasma)</h2>
-			<img src="thumbnail/Condensed Matter.jpg" alt="Condensed Matter">
-			
-
-<!-- Astronomical objects -->
-<h2>Asteroid</h2>
-			<img src="thumbnail/Asteroid.gif" alt="Asteroid">
-			
-<h2>Comet</h2>
-			<img src="thumbnail/Comet.gif" alt="Comet">
-			
-<h2>Planet</h2>
-			<img src="thumbnail/Planet.jpg" alt="Planet">
-			
-<!-- Stellar objects -->
-<h2>Star</h2>
-			<img src="thumbnail/Star.gif" alt="Star">
-			
-<h2>White Dwarf</h2>
-			<img src="thumbnail/White Dwarf.jpg" alt="White Dwarf">
-			
-<h2>Neutron Star</h2>
-			<img src="thumbnail/Neutron Star.webp" alt="Neutron Star">
-			
-<h2>Black Hole</h2>
-			<img src="thumbnail/Black Hole.gif" alt="Black Hole">
-			
-<!-- Large-scale structures -->
-<h2>Solar System</h2>
-			<img src="thumbnail/Solar System.gif" alt="Solar System">
-			
-<h2>Star Cluster</h2>
-			<img src="thumbnail/Star Cluster.gif" alt="Star Cluster">
-			
-<h2>Galaxy</h2>
-			<img src="thumbnail/Galaxy.gif" alt="Galaxy">
-			
-<h2>Galaxy Cluster</h2>
-			<img src="thumbnail/Galaxy Cluster.jpg" alt="Galaxy Cluste">
-			
-<h2>Super Cluster</h2>
-			<img src="thumbnail/Super Cluster.png" alt="Super Cluster">
-			
-<h2 class="highlight">Brahmand / Observable Universe</h2>
-			<img src="thumbnail/Observable Universe.jpg" alt="Observable Universe">
-			
-<h2>Multiverse</h2>
-			<img src="thumbnail/Multiverse.jpg" alt="Multiverse">
-			
-        <button class="btn-transparent" onclick="showHome()">Close</button>
+        <!-- POSTS START -->
+        <div class="post-box">
+            <h2>Open string</h2>
+            <img src="thumbnail/Open string.gif" alt="Open string">
         </div>
+
+        <div class="post-box">
+            <h2>Closed string</h2>
+            <img src="thumbnail/Closed string.gif" alt="Closed string">
+        </div>
+
+        <div class="post-box">
+            <h2>Super strings</h2>
+            <img src="thumbnail/Super strings.gif" alt="Super strings">
+        </div>
+
+        <div class="post-box">
+            <h2>Quarks</h2>
+            <img src="thumbnail/Quarks.jpg" alt="Quarks">
+        </div>
+
+        <div class="post-box">
+            <h2>Muon</h2>
+            <img src="thumbnail/Muon.jpg" alt="Muon">
+        </div>
+
+        <div class="post-box">
+            <h2>Tau</h2>
+            <img src="thumbnail/Tau.png" alt="Tau">
+        </div>
+
+        <div class="post-box">
+            <h2>Photon</h2>
+            <img src="thumbnail/Photon.gif" alt="Photon">
+        </div>
+
+        <div class="post-box">
+            <h2>Gluon</h2>
+            <img src="thumbnail/Gluon.jpg" alt="Gluon">
+        </div>
+
+        <div class="post-box">
+            <h2>W⁺ Boson</h2>
+            <img src="thumbnail/W⁺ Boson.jpg" alt="W⁺ Boson">
+        </div>
+
+        <div class="post-box">
+            <h2>W⁻ Boson</h2>
+            <img src="thumbnail/W⁻ Boson.jpg" alt="W⁻ Boson">
+        </div>
+
+        <div class="post-box">
+            <h2>Z Boson</h2>
+            <img src="thumbnail/Z Boson.jpg" alt="Z Boson">
+        </div>
+
+        <div class="post-box">
+            <h2>Higgs Boson</h2>
+            <img src="thumbnail/Higgs Boson.jpeg" alt="Higgs Boson">
+        </div>
+
+        <div class="post-box">
+            <h2>Graviton</h2>
+            <img src="thumbnail/Graviton.gif" alt="Graviton">
+        </div>
+
+        <!-- Composite particles -->
+        <div class="post-box">
+            <h2>Hadron</h2>
+            <img src="thumbnail/Hadron.jpg" alt="Hadron">
+        </div>
+
+        <div class="post-box">
+            <h2>Baryon and meson</h2>
+            <img src="thumbnail/Baryon and meson.jpg" alt="Baryon and meson">
+        </div>
+
+        <div class="post-box">
+            <h2>Neutron electron and proton</h2>
+            <img src="thumbnail/Neutron electron and proton.jpeg" alt="Neutron electron and proton">
+        </div>
+
+        <!-- Atomic level -->
+        <div class="post-box">
+            <h2>Atom</h2>
+            <img src="thumbnail/Atom.gif" alt="Atom">
+        </div>
+
+        <!-- Molecular / matter scale -->
+        <div class="post-box">
+            <h2>Molecule</h2>
+            <img src="thumbnail/Molecule.gif" alt="Molecule">
+        </div>
+
+        <div class="post-box">
+            <h2>Condensed Matter (Solid / Liquid / Gas / Plasma)</h2>
+            <img src="thumbnail/Condensed Matter.jpg" alt="Condensed Matter">
+        </div>
+
+        <!-- Astronomical objects -->
+        <div class="post-box">
+            <h2>Asteroid</h2>
+            <img src="thumbnail/Asteroid.gif" alt="Asteroid">
+        </div>
+
+        <div class="post-box">
+            <h2>Comet</h2>
+            <img src="thumbnail/Comet.gif" alt="Comet">
+        </div>
+
+        <div class="post-box">
+            <h2>Planet</h2>
+            <img src="thumbnail/Planet.jpg" alt="Planet">
+        </div>
+
+        <!-- Stellar objects -->
+        <div class="post-box">
+            <h2>Star</h2>
+            <img src="thumbnail/Star.gif" alt="Star">
+        </div>
+
+        <div class="post-box">
+            <h2>White Dwarf</h2>
+            <img src="thumbnail/White Dwarf.jpg" alt="White Dwarf">
+        </div>
+
+        <div class="post-box">
+            <h2>Neutron Star</h2>
+            <img src="thumbnail/Neutron Star.webp" alt="Neutron Star">
+        </div>
+
+        <div class="post-box">
+            <h2>Black Hole</h2>
+            <img src="thumbnail/Black Hole.gif" alt="Black Hole">
+        </div>
+
+        <!-- Large-scale structures -->
+        <div class="post-box">
+            <h2>Solar System</h2>
+            <img src="thumbnail/Solar System.gif" alt="Solar System">
+        </div>
+
+        <div class="post-box">
+            <h2>Star Cluster</h2>
+            <img src="thumbnail/Star Cluster.gif" alt="Star Cluster">
+        </div>
+
+        <div class="post-box">
+            <h2>Galaxy</h2>
+            <img src="thumbnail/Galaxy.gif" alt="Galaxy">
+        </div>
+
+        <div class="post-box">
+            <h2>Galaxy Cluster</h2>
+            <img src="thumbnail/Galaxy Cluster.jpg" alt="Galaxy Cluster">
+        </div>
+
+        <div class="post-box">
+            <h2>Super Cluster</h2>
+            <img src="thumbnail/Super Cluster.png" alt="Super Cluster">
+        </div>
+
+        <div class="post-box">
+            <h2 class="highlight">Brahmand / Observable Universe</h2>
+            <img src="thumbnail/Observable Universe.jpg" alt="Observable Universe">
+        </div>
+
+        <div class="post-box">
+            <h2>Multiverse</h2>
+            <img src="thumbnail/Multiverse.jpg" alt="Multiverse">
+        </div>
+        <!-- POSTS END -->
+
+        <button class="btn-transparent" onclick="showHome()">Close</button>
+
     </div>
+</div>
 
     <div id="tartam" class="page-container">
         <div class="glass-card">
